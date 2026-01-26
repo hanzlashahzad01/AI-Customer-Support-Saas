@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test - Perfect Pick AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-register {
+            background: #667eea;
+            color: white;
+        }
+        .btn-register:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-login {
+            background: #764ba2;
+            color: white;
+        }
+        .btn-login:hover {
+            background: #63408a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+        .btn-test {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-test:hover {
+            background: #38a169;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #c6f6d5;
+            border: 2px solid #48bb78;
+            color: #22543d;
+        }
+        .error {
+            background: #fed7d7;
+            border: 2px solid #f56565;
+            color: #742a2a;
+        }
+        .info {
+            background: #bee3f8;
+            border: 2px solid #4299e1;
+            color: #2c5282;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .status.online {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .status.offline {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentication Test</h1>
+        <p class="subtitle">Direct API testing for debugging</p>
+        
+        <div id="serverStatus"></div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="John Doe" value="Test User">
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="test@example.com" value="test@example.com">
+        </div>
+
+        <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" id="companyName" placeholder="Test Company" value="Test Company">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="password123" value="password123">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-test" onclick="testServer()">Test Server</button>
+            <button class="btn-register" onclick="testRegister()">Register</button>
+            <button class="btn-login" onclick="testLogin()">Login</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        async function testServer() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="result info">Testing server connection...</div>';
+
+            try {
+                const response = await fetch('http://localhost:5000');
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="result success">✅ Server is running on port 5000!</div>';
+                    updateServerStatus(true);
+                } else {
+                    resultDiv.innerHTML = '<div class="result error">⚠️ Server responded but with status: ' + response.status + '</div>';
+                    updateServerStatus(false);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="result error">❌ Cannot connect to server!\n\nError: ' + error.message + '\n\nMake sure:\n1. Server is running (npm start in server folder)\n2. MongoDB is running\n3. Server is on port 5000</div>';
+                updateServerStatus(false);
+            }
+        }
+
+        function updateServerStatus(online) {
+            const statusDiv = document.getElementById('serverStatus');
+            if (online) {
+                statusDiv.innerHTML = '<span class="status online">🟢 Server Online</span>';
+            } else {
+                statusDiv.innerHTML = '<span class="status offline">🔴 Server Offline</span>';
+            }
+        }
+
+        async function testRegister() {
+            const resultDiv = document.getElementById('result');
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                companyName: document.getElementById('companyName').value,
+                role: 'company_admin'
+            };
+
+            resultDiv.innerHTML = '<div class="result info">Sending registration request...\n\nData: ' + JSON.stringify(data, null, 2) + '</div>';
+
+            try {
+                const response = await fetch(API_URL + '/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="result success">✅ Registration Successful!\n\nStatus: ' + response.status + '\n\nResponse:\n' + JSON.stringify(result, null, 2) + '\n\nToken: ' + (result.token ? '✓ Received' : '✗ Missing') + '\nUser ID: ' + (result.user?.id || result.user?._id) + '\nCompany ID: ' + result.user?.companyId + '</div>';
+                    
+                    // Save token for login test
+                    if (result.token) {
+                        localStorage.setItem('test_token', result.token);
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="result error">❌ Registration Failed!\n\nStatus: ' + response.status + '\n\nError:\n' + JSON.stringify(result, null, 2) + '</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="result error">❌ Request Failed!\n\nError: ' + error.message + '\n\nPossible causes:\n1. Server not running\n2. CORS issue\n3. Network error\n4. MongoDB not connected</div>';
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            const data = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            resultDiv.innerHTML = '<div class="result info">Sending login request...\n\nData: ' + JSON.stringify(data, null, 2) + '</div>';
+
+            try {
+                const response = await fetch(API_URL + '/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="result success">✅ Login Successful!\n\nStatus: ' + response.status + '\n\nResponse:\n' + JSON.stringify(result, null, 2) + '\n\nToken: ' + (result.token ? '✓ Received' : '✗ Missing') + '\nUser: ' + result.user?.name + '\nEmail: ' + result.user?.email + '</div>';
+                    
+                    // Save token
+                    if (result.token) {
+                        localStorage.setItem('test_token', result.token);
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="result error">❌ Login Failed!\n\nStatus: ' + response.status + '\n\nError:\n' + JSON.stringify(result, null, 2) + '</div>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="result error">❌ Request Failed!\n\nError: ' + error.message + '\n\nPossible causes:\n1. Server not running\n2. CORS issue\n3. Network error</div>';
+            }
+        }
+
+        // Test server on load
+        window.onload = function() {
+            testServer();
+        };
+    </script>
+</body>
+</html>
