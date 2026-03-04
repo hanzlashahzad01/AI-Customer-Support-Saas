@@ -123,5 +123,14 @@ Check `server/.env` to configure MongoDB URI and OpenAI API Key.
 2. Go to Dashboard -> Bot Builder to configure your bot.
 3. Access the Chat Widget at `/widget/YOUR_COMPANY_ID`.
 
-   
+## 📬 Connect with Me
+I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
+
+Email: hanzlashahzadhanzlashahzad@gmail.com
+
+LinkedIn: https://www.linkedin.com/in/hanzla-shahzad
+
+GitHub: https://github.com/hanzlashahzad01/hanzlashahzad01
+
+
   
